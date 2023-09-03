@@ -2,13 +2,33 @@ import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
 import csv
+import random
+
+TEXT_COLOR = -1
+
+# Function to generate a random color in hexadecimal format
+def random_color():
+    return "#{:02x}{:02x}{:02x}".format(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
+def red_color():
+    return "#{:02x}{:02x}{:02x}".format(255, 0, 0)
+
+def black_color():
+    return "#{:02x}{:02x}{:02x}".format(0, 0, 0)
 
 def save_work_time():
     work_time = work_time_entry.get()
     selected_date = date_entry.get()
+    global TEXT_COLOR
+    TEXT_COLOR = (TEXT_COLOR + 1) % 2
+
+    if TEXT_COLOR % 2 == 0:
+        text_color = black_color()
+    else:
+        text_color = red_color()
     
     # Calculate time allocation based on the percentage
-    percentage_allocation = float(percentage_entry.get()) if percentage_entry.get() else 100.0
+    percentage_allocation = float(percentage_entry.get())
     default_project_time = round(float(work_time) * (percentage_allocation / 100), 2)
     remaining_time = round(float(work_time) - default_project_time, 2)
     
@@ -18,11 +38,12 @@ def save_work_time():
     if not selected_date or not selected_project:
         return  # Do not proceed if date or project is empty
     
-    # Store the work time entries
-    work_time_entries.append((selected_date, selected_project, default_project_time))
+    # Store the work time entries with a random text color
+    #text_color = random_color()
+    work_time_entries.append((selected_date, selected_project, default_project_time, text_color))
     
     if remaining_time > 0 and other_project:
-        work_time_entries.append((selected_date, other_project, remaining_time))
+        work_time_entries.append((selected_date, other_project, remaining_time, text_color))
 
     # Update the list of saved entries
     update_work_time_list()
@@ -30,8 +51,9 @@ def save_work_time():
 def update_work_time_list():
     work_time_list.delete(0, tk.END)
     for i, entry in enumerate(work_time_entries):
-        date, project, time = entry
+        date, project, time, text_color = entry
         work_time_list.insert(tk.END, f"Date: {date}, Project: {project}, Work Time: {time} hours")
+        work_time_list.itemconfig(i, {"fg": text_color})
         # Set a light gray background for alternate rows
         if i % 2 == 1:
             work_time_list.itemconfig(i, {'bg': 'light gray'})
