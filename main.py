@@ -8,7 +8,7 @@ def save_work_time():
     selected_date = date_entry.get()
     
     # Calculate time allocation based on the percentage
-    percentage_allocation = float(percentage_entry.get())
+    percentage_allocation = float(percentage_entry.get()) if percentage_entry.get() else 100.0
     default_project_time = round(float(work_time) * (percentage_allocation / 100), 2)
     remaining_time = round(float(work_time) - default_project_time, 2)
     
